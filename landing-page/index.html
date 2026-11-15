@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>T.R.E.E – Hệ thống Quản lý Góc sách Khoa Toán–Tin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-dark: #0d5c56;
+      --primary-light: #14b8a6;
+      --accent: #f59e0b;
+      --accent-soft: #fef3c7;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --danger: #ef4444;
+      --shadow: 0 10px 40px -10px rgba(15, 118, 110, 0.15);
+      --radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ========== NAV ========== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .nav.scrolled {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .logo-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text span {
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.9rem;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+      background: rgba(15, 118, 110, 0.08);
+    }
+
+    .nav-cta {
+      background: var(--primary) !important;
+      color: white !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--primary-dark) !important;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      margin: 5px 0;
+      transition: 0.3s;
+    }
+
+    /* ========== HERO ========== */
+    .hero {
+      padding: 140px 24px 80px;
+      background: 
+        radial-gradient(ellipse 80% 60% at 50% -20%, rgba(20, 184, 166, 0.18), transparent),
+        linear-gradient(180deg, #f0fdfa 0%, var(--bg) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--primary);
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 640px;
+      margin: 0 auto 36px;
+      font-weight: 400;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 56px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.25s;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(15, 118, 110, 0.4);
+    }
+
+    .btn-outline {
+      background: white;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(15, 118, 110, 0.04);
+    }
+
+    .team-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .member {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .member.leader {
+      background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
+      border-color: #99f6e4;
+      color: var(--primary-dark);
+    }
+
+    .member .role {
+      font-size: 0.7rem;
+      background: var(--primary);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    /* ========== SECTIONS ========== */
+    section {
+      padding: 80px 24px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: -0.8px;
+      margin-bottom: 12px;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* ========== ABOUT ========== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .about-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 36px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .about-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      margin-bottom: 16px;
+      color: var(--primary-dark);
+    }
+
+    .about-card p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .flow-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .flow-step {
+      background: #f0fdfa;
+      color: var(--primary-dark);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .about-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .visual-box {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: all 0.25s;
+    }
+
+    .visual-box:hover {
+      border-color: var(--primary-light);
+      box-shadow: 0 8px 24px rgba(15, 118, 110, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .visual-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .visual-box h4 {
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .visual-box p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    /* ========== SCOPE ========== */
+    .scope-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+
+    .scope-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 32px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .scope-card.include {
+      border-top: 4px solid var(--success);
+    }
+
+    .scope-card.exclude {
+      border-top: 4px solid var(--danger);
+    }
+
+    .scope-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    .scope-card ul {
+      list-style: none;
+    }
+
+    .scope-card li {
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.95rem;
+    }
+
+    .scope-card li:last-child {
+      border-bottom: none;
+    }
+
+    .scope-card .check {
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .scope-card .cross {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .focus-banner {
+      margin-top: 32px;
+      background: linear-gradient(135deg, #0f766e, #0d9488);
+      color: white;
+      border-radius: var(--radius);
+      padding: 28px 36px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 10px 30px rgba(15, 118, 110, 0.3);
+    }
+
+    .focus-banner .emoji {
+      font-size: 2.5rem;
+    }
+
+    .focus-banner p {
+      font-size: 1.1rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    /* ========== USERS ========== */
+    .users-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .user-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      border: 1px solid var(--border);
+      text-align: center;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .user-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow);
+    }
+
+    .user-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .user-card.student::before { background: var(--primary); }
+    .user-card.volunteer::before { background: var(--accent); }
+    .user-card.admin::before { background: #6366f1; }
+
+    .user-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    .user-card.student .user-avatar { background: #ccfbf1; }
+    .user-card.volunteer .user-avatar { background: #fef3c7; }
+    .user-card.admin .user-avatar { background: #e0e7ff; }
+
+    .user-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .user-card .role-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 12px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+
+    .user-card.student .role-tag { background: #ccfbf1; color: #0f766e; }
+    .user-card.volunteer .role-tag { background: #fef3c7; color: #b45309; }
+    .user-card.admin .role-tag { background: #e0e7ff; color: #4338ca; }
+
+    .user-card ul {
+      list-style: none;
+      text-align: left;
+      margin-top: 12px;
+    }
+
+    .user-card li {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      padding: 6px 0;
+      display: flex;
+      gap: 8px;
+    }
+
+    .user-card li::before {
+      content: '→';
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* ========== BEFORE / AFTER ========== */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .compare-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 28px;
+      border: 1px solid var(--border);
+    }
+
+    .compare-card.before {
+      border-left: 4px solid #94a3b8;
+    }
+
+    .compare-card.after {
+      border-left: 4px solid var(--primary);
+    }
+
+    .compare-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .compare-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .c-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      position: relative;
+    }
+
+    .c-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 38px;
+      bottom: -2px;
+      width: 2px;
+      background: #e2e8f0;
+    }
+
+    .c-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .compare-card.after .c-num {
+      background: #ccfbf1;
+      color: var(--primary-dark);
+    }
+
+    .c-text {
+      font-size: 0.92rem;
+    }
+
+    .compare-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    /* ========== MODULES ========== */
+    .modules-section {
+      background: linear-gradient(180deg, #f0fdfa 0%, var(--bg) 100%);
+    }
+
+    .modules-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+      justify-content: center;
+    }
+
+    .mod-tab {
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: white;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      color: var(--text-muted);
+    }
+
+    .mod-tab:hover {
+      border-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .mod-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .mod-content {
+      display: none;
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .mod-content.active {
+      display: block;
+      animation: fadeIn 0.35s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .mod-header {
+      background: linear-gradient(135deg, #0f766e, #0d9488);
+      color: white;
+      padding: 20px 28px;
+    }
+
+    .mod-header h3 {
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
+
+    .mod-header p {
+      opacity: 0.85;
+      font-size: 0.9rem;
+    }
+
+    .mod-table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th {
+      background: #f8fafc;
+      text-align: left;
+      padding: 14px 18px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .code {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.8rem;
+      background: #f0fdfa;
+      color: var(--primary-dark);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ========== PERMISSION ========== */
+    .perm-table-wrap {
+      overflow-x: auto;
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .perm-table {
+      min-width: 700px;
+    }
+
+    .perm-table th {
+      background: #0f766e;
+      color: white;
+      text-align: center;
+      padding: 14px 12px;
+    }
+
+    .perm-table th:first-child {
+      text-align: left;
+      border-radius: 0;
+    }
+
+    .perm-table td {
+      text-align: center;
+      padding: 12px;
+    }
+
+    .perm-table td:first-child {
+      text-align: left;
+      font-weight: 500;
+    }
+
+    .yes {
+      color: var(--success);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .no {
+      color: #cbd5e1;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .partial {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    /* ========== STATUS ========== */
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+
+    .status-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 28px;
+      border: 1px solid var(--border);
+    }
+
+    .status-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stag {
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    .stag.wait { background: #fef3c7; color: #92400e; }
+    .stag.active { background: #ccfbf1; color: #0f766e; }
+    .stag.done { background: #d1fae5; color: #065f46; }
+    .stag.hide { background: #e2e8f0; color: #475569; }
+    .stag.reject { background: #fee2e2; color: #991b1b; }
+    .stag.progress { background: #e0e7ff; color: #3730a3; }
+
+    /* ========== FOOTER ========== */
+    footer {
+      background: #0f172a;
+      color: #94a3b8;
+      padding: 60px 24px 30px;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 12px;
+    }
+
+    .footer-logo span {
+      color: var(--primary-light);
+    }
+
+    .footer-team {
+      margin: 24px 0;
+      font-size: 0.9rem;
+    }
+
+    .footer-team strong {
+      color: #e2e8f0;
+    }
+
+    .footer-copy {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #1e293b;
+      font-size: 0.85rem;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 900px) {
+      .about-grid,
+      .scope-grid,
+      .users-grid,
+      .status-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .compare-arrow {
+        transform: rotate(90deg);
+        padding: 8px 0;
+      }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 68px;
+        left: 0;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero {
+        padding: 120px 16px 60px;
+      }
+
+      section {
+        padding: 60px 16px;
+      }
+
+      .focus-banner {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <div class="logo-icon">T</div>
+        <div class="logo-text">T.R.E.E <span>Góc Sách</span></div>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">Giới thiệu</a></li>
+        <li><a href="#scope">Phạm vi</a></li>
+        <li><a href="#users">Đối tượng</a></li>
+        <li><a href="#compare">Tin học hóa</a></li>
+        <li><a href="#modules">Chức năng</a></li>
+        <li><a href="#permission">Phân quyền</a></li>
+        <li><a href="#modules" class="nav-cta">Xem chi tiết</a></li>
+      </ul>
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Đề tài môn Học phần Hệ thống thông tin
+      </div>
+      <h1>
+        <span class="highlight">T.R.E.E</span><br />
+        Hệ thống Quản lý Góc sách<br />Khoa Toán–Tin
+      </h1>
+      <p class="hero-sub">
+        Transfer – Retain – Evolve – Education<br />
+        Nền tảng chia sẻ sách miễn phí giữa sinh viên – không phải thư viện truyền thống.
+      </p>
+      <div class="hero-actions">
+        <a href="#modules" class="btn btn-primary">
+          Xem phân hệ chức năng
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#about" class="btn btn-outline">Tìm hiểu đề tài</a>
+      </div>
+
+      <div class="team-row">
+        <div class="member leader">Tô Nhật Minh <span class="role">Leader</span></div>
+        <div class="member">Nguyễn Văn Ngọc Hảo</div>
+        <div class="member">Nguyễn Trung Hiếu</div>
+        <div class="member">Nguyễn Tiến Hùng</div>
+        <div class="member">Phạm Đỗ Thi Khánh</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">01 · Giới thiệu</div>
+        <h2 class="section-title">Không phải thư viện truyền thống</h2>
+        <p class="section-desc">Hệ thống tập trung vào việc chia sẻ sách giữa sinh viên trong môi trường trường đại học.</p>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>Ý tưởng cốt lõi</h3>
+          <p>
+            <strong>Không tập trung vào mượn và trả</strong> như thư viện thông thường.
+            Thay vào đó, sinh viên có sách → chia sẻ → sinh viên khác nhận → sử dụng → chia sẻ tiếp.
+          </p>
+          <p>
+            Mục tiêu là xây dựng vòng tuần hoàn tài nguyên học tập, giúp sách được tận dụng tối đa,
+            giảm lãng phí và tạo cộng đồng chia sẻ văn hóa đọc trong Khoa Toán–Tin.
+          </p>
+          <div class="flow-steps">
+            <span class="flow-step">Đăng sách</span>
+            <span class="flow-step">→ Tìm kiếm</span>
+            <span class="flow-step">→ Nhận sách</span>
+            <span class="flow-step">→ Sử dụng</span>
+            <span class="flow-step">→ Chia sẻ lại</span>
+          </div>
+        </div>
+
+        <div class="about-visual">
+          <div class="visual-box">
+            <div class="visual-icon">📚</div>
+            <div>
+              <h4>Transfer</h4>
+              <p>Chuyển giao sách từ người có sang người cần một cách dễ dàng.</p>
+            </div>
+          </div>
+          <div class="visual-box">
+            <div class="visual-icon">🔄</div>
+            <div>
+              <h4>Retain</h4>
+              <p>Giữ lại giá trị của sách qua nhiều vòng chia sẻ trong cộng đồng.</p>
+            </div>
+          </div>
+          <div class="visual-box">
+            <div class="visual-icon">🌱</div>
+            <div>
+              <h4>Evolve</h4>
+              <p>Hệ thống và cộng đồng cùng phát triển theo nhu cầu thực tế.</p>
+            </div>
+          </div>
+          <div class="visual-box">
+            <div class="visual-icon">🎓</div>
+            <div>
+              <h4>Education</h4>
+              <p>Phục vụ mục tiêu giáo dục – hỗ trợ học tập của sinh viên.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCOPE -->
+  <section id="scope" style="background: white;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">02 · Phạm vi đề tài</div>
+        <h2 class="section-title">Bao gồm & Không tập trung vào</h2>
+      </div>
+
+      <div class="scope-grid">
+        <div class="scope-card include">
+          <h3><span class="check">✓</span> Bao gồm</h3>
+          <ul>
+            <li><span class="check">✓</span> Đăng tải sách muốn chia sẻ</li>
+            <li><span class="check">✓</span> Quản lý thông tin sách</li>
+            <li><span class="check">✓</span> Phân loại sách</li>
+            <li><span class="check">✓</span> Tìm kiếm và lọc sách</li>
+            <li><span class="check">✓</span> Xem thông tin sách</li>
+            <li><span class="check">✓</span> Đăng ký nhận sách</li>
+            <li><span class="check">✓</span> Quản lý sách đã đăng / đã nhận</li>
+            <li><span class="check">✓</span> Chia sẻ lại sách</li>
+            <li><span class="check">✓</span> Quản trị và kiểm duyệt nội dung</li>
+          </ul>
+        </div>
+        <div class="scope-card exclude">
+          <h3><span class="cross">✗</span> Không tập trung vào</h3>
+          <ul>
+            <li><span class="cross">✗</span> Bán sách thương mại</li>
+            <li><span class="cross">✗</span> Quản lý kho sách của thư viện</li>
+            <li><span class="cross">✗</span> Quản lý việc thu phí</li>
+            <li><span class="cross">✗</span> Kinh doanh sách</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="focus-banner">
+        <div class="emoji">🎯</div>
+        <p>Hệ thống tập trung vào việc <strong>chia sẻ sách giữa sinh viên</strong> trong môi trường trường đại học – miễn phí, cộng đồng, tuần hoàn.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- USERS -->
+  <section id="users">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">03 · Đối tượng</div>
+        <h2 class="section-title">Ba nhóm người dùng chính</h2>
+      </div>
+
+      <div class="users-grid">
+        <div class="user-card student">
+          <div class="user-avatar">👨‍🎓</div>
+          <h3>Sinh viên</h3>
+          <span class="role-tag">Người dùng chính</span>
+          <ul>
+            <li>Đăng sách không còn sử dụng</li>
+            <li>Tìm kiếm & nhận sách cần dùng</li>
+            <li>Gửi / hủy yêu cầu nhận sách</li>
+            <li>Theo dõi lịch sử & chia sẻ lại</li>
+            <li>Gửi báo cáo vi phạm</li>
+          </ul>
+        </div>
+        <div class="user-card volunteer">
+          <div class="user-avatar">🤝</div>
+          <h3>Tình nguyện viên</h3>
+          <span class="role-tag">Hỗ trợ vận hành</span>
+          <ul>
+            <li>Nhận yêu cầu được phân công</li>
+            <li>Thống nhất lịch bàn giao</li>
+            <li>Xác nhận bàn giao sách</li>
+            <li>Ghi nhận sự cố (nếu có)</li>
+            <li>Cập nhật tiến độ hỗ trợ</li>
+          </ul>
+        </div>
+        <div class="user-card admin">
+          <div class="user-avatar">🛡️</div>
+          <h3>Quản trị viên</h3>
+          <span class="role-tag">Quản lý hệ thống</span>
+          <ul>
+            <li>Quản lý tài khoản & danh mục</li>
+            <li>Kiểm duyệt bài đăng sách</li>
+            <li>Duyệt tình nguyện viên</li>
+            <li>Xử lý báo cáo vi phạm</li>
+            <li>Xem thống kê & nhật ký</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARE -->
+  <section id="compare" style="background: white;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">04 · Mức độ tin học hóa</div>
+        <h2 class="section-title">Trước & Sau khi tin học hóa</h2>
+        <p class="section-desc">Từ trao đổi thủ công trên Facebook/Zalo đến hệ thống chuyên biệt.</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card before">
+          <h3>⏳ Trước khi tin học hóa</h3>
+          <div class="compare-steps">
+            <div class="c-step"><div class="c-num">1</div><div class="c-text">Sinh viên có sách</div></div>
+            <div class="c-step"><div class="c-num">2</div><div class="c-text">Tự hỏi bạn bè</div></div>
+            <div class="c-step"><div class="c-num">3</div><div class="c-text">Đăng Facebook / Zalo</div></div>
+            <div class="c-step"><div class="c-num">4</div><div class="c-text">Tìm người cần</div></div>
+            <div class="c-step"><div class="c-num">5</div><div class="c-text">Trao đổi trực tiếp</div></div>
+          </div>
+        </div>
+
+        <div class="compare-arrow">⟶</div>
+
+        <div class="compare-card after">
+          <h3>🚀 Sau khi tin học hóa</h3>
+          <div class="compare-steps">
+            <div class="c-step"><div class="c-num">1</div><div class="c-text">Đăng sách lên hệ thống</div></div>
+            <div class="c-step"><div class="c-num">2</div><div class="c-text">Tìm kiếm & phân loại</div></div>
+            <div class="c-step"><div class="c-num">3</div><div class="c-text">Kết nối sinh viên</div></div>
+            <div class="c-step"><div class="c-num">4</div><div class="c-text">Nhận / chia sẻ có kiểm soát</div></div>
+            <div class="c-step"><div class="c-num">5</div><div class="c-text">Chia sẻ lại & theo dõi lịch sử</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULES -->
+  <section id="modules" class="modules-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">05 · Phân rã chức năng</div>
+        <h2 class="section-title">9 Phân hệ – Chi tiết mô đun</h2>
+        <p class="section-desc">Bảng phân rã chức năng và đặc tả mô đun của hệ thống.</p>
+      </div>
+
+      <div class="modules-tabs" id="modTabs">
+        <button class="mod-tab active" data-tab="1">1. Tài khoản</button>
+        <button class="mod-tab" data-tab="2">2. Quản lý sách</button>
+        <button class="mod-tab" data-tab="3">3. Yêu cầu nhận</button>
+        <button class="mod-tab" data-tab="4">4. Tình nguyện viên</button>
+        <button class="mod-tab" data-tab="5">5. Chia sẻ lại</button>
+        <button class="mod-tab" data-tab="6">6. Quản trị</button>
+        <button class="mod-tab" data-tab="7">7. Thông báo</button>
+        <button class="mod-tab" data-tab="8">8. Thống kê</button>
+        <button class="mod-tab" data-tab="9">9. Nhật ký & Bảo mật</button>
+      </div>
+
+      <!-- Tab 1 -->
+      <div class="mod-content active" id="tab-1">
+        <div class="mod-header">
+          <h3>1. Quản lý tài khoản</h3>
+          <p>Đăng ký, đăng nhập, hồ sơ và bảo mật tài khoản người dùng</p>
+        </div>
+        <div class="mod-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Chức năng con</th>
+                <th>Input</th>
+                <th>Process</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="code">M-1.1.1</span></td>
+                <td>Đăng ký tài khoản</td>
+                <td>Họ tên, mã SV, email trường, SĐT, mật khẩu</td>
+                <td>Kiểm tra bắt buộc, định dạng email, trùng lặp; mã hóa mật khẩu</td>
+                <td>Tài khoản mới / thông báo lỗi</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-1.1.2</span></td>
+                <td>Đăng nhập</td>
+                <td>Email/mã SV, mật khẩu</td>
+                <td>Đối chiếu thông tin, kiểm tra trạng thái, tạo phiên & phân quyền</td>
+                <td>Trang chủ theo vai trò / lỗi</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-1.1.3</span></td>
+                <td>Đăng xuất</td>
+                <td>Phiên hiện tại</td>
+                <td>Hủy phiên, xóa thông tin phiên</td>
+                <td>Về trang đăng nhập</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-1.1.4</span></td>
+                <td>Quên / đặt lại mật khẩu</td>
+                <td>Email đã đăng ký</td>
+                <td>Gửi link/mã, xác thực, lưu mật khẩu mới</td>
+                <td>Thông báo thành công</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-1.2.1</span></td>
+                <td>Xem hồ sơ cá nhân</td>
+                <td>Mã người dùng</td>
+                <td>Truy vấn theo quyền</td>
+                <td>Thông tin hồ sơ</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-1.2.2</span></td>
+                <td>Cập nhật hồ sơ</td>
+                <td>Thông tin mới, ảnh đại diện</td>
+                <td>Kiểm tra hợp lệ, cập nhật</td>
+                <td>Hồ sơ mới</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-1.2.3</span></td>
+                <td>Đổi mật khẩu</td>
+                <td>Mật khẩu hiện tại + mới</td>
+                <td>Xác thực, kiểm tra độ mạnh, mã hóa</td>
+                <td>Thông báo kết quả</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 2 -->
+      <div class="mod-content" id="tab-2">
+        <div class="mod-header">
+          <h3>2. Quản lý sách</h3>
+          <p>Danh mục, đăng sách chia sẻ, tìm kiếm và xem chi tiết</p>
+        </div>
+        <div class="mod-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Chức năng con</th>
+                <th>Input</th>
+                <th>Process</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="code">M-2.1.1</span></td>
+                <td>Xem danh sách / danh mục</td>
+                <td>Từ khóa, danh mục, trạng thái, bộ lọc</td>
+                <td>Truy vấn, lọc, sắp xếp</td>
+                <td>Danh sách sách phù hợp</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-2.1.2</span></td>
+                <td>Thêm danh mục (Admin)</td>
+                <td>Tên danh mục, mô tả</td>
+                <td>Kiểm tra trùng tên, lưu</td>
+                <td>Danh mục mới</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-2.1.3</span></td>
+                <td>Cập nhật / xóa danh mục</td>
+                <td>Mã danh mục, thông tin mới</td>
+                <td>Kiểm tra quyền & sách đang dùng</td>
+                <td>Cập nhật hoặc từ chối xóa</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-2.2.1</span></td>
+                <td>Đăng sách mới</td>
+                <td>Tên, tác giả, danh mục, mô tả, tình trạng, số lượng, ảnh</td>
+                <td>Kiểm tra bắt buộc, lưu (chờ duyệt / công khai)</td>
+                <td>Mã bài đăng + thông báo</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-2.2.2</span></td>
+                <td>Chỉnh sửa thông tin sách</td>
+                <td>Mã bài, thông tin sửa</td>
+                <td>Kiểm tra chủ sở hữu & trạng thái</td>
+                <td>Thông tin được cập nhật</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-2.2.3</span></td>
+                <td>Cập nhật số lượng / tình trạng</td>
+                <td>Mã bài, số lượng còn, tình trạng</td>
+                <td>Kiểm tra hợp lệ, cập nhật</td>
+                <td>Trạng thái mới</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-2.2.4</span></td>
+                <td>Ẩn / gỡ bài đăng</td>
+                <td>Mã bài, lý do</td>
+                <td>Xác minh người đăng, kiểm tra yêu cầu đang xử lý</td>
+                <td>Bài chuyển trạng thái ẩn/gỡ</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-2.3.1</span></td>
+                <td>Tìm kiếm theo từ khóa</td>
+                <td>Tên sách, tác giả, từ khóa</td>
+                <td>Tìm trên tên, tác giả, mô tả</td>
+                <td>Danh sách kết quả</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-2.3.2</span></td>
+                <td>Lọc và sắp xếp</td>
+                <td>Danh mục, tình trạng, ngày, hình thức</td>
+                <td>Áp dụng bộ lọc & sắp xếp</td>
+                <td>Danh sách sau lọc</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-2.3.3</span></td>
+                <td>Xem chi tiết sách</td>
+                <td>Mã bài đăng</td>
+                <td>Truy vấn đầy đủ thông tin</td>
+                <td>Trang chi tiết sách</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 3 -->
+      <div class="mod-content" id="tab-3">
+        <div class="mod-header">
+          <h3>3. Quản lý yêu cầu nhận sách</h3>
+          <p>Gửi yêu cầu, xử lý và theo dõi trạng thái</p>
+        </div>
+        <div class="mod-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Chức năng con</th>
+                <th>Input</th>
+                <th>Process</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="code">M-3.1.1</span></td>
+                <td>Gửi yêu cầu nhận sách</td>
+                <td>Mã bài, lời nhắn, phương thức/thời gian nhận</td>
+                <td>Kiểm tra đăng nhập, số lượng, không phải chủ bài</td>
+                <td>Mã yêu cầu – chờ xác nhận</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-3.1.2</span></td>
+                <td>Hủy yêu cầu</td>
+                <td>Mã yêu cầu, lý do</td>
+                <td>Chỉ hủy khi chưa hoàn tất bàn giao</td>
+                <td>Yêu cầu bị hủy</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-3.2.1</span></td>
+                <td>Xác nhận / từ chối (người chia sẻ)</td>
+                <td>Mã yêu cầu, quyết định, ghi chú</td>
+                <td>Kiểm tra quyền chủ bài, cập nhật trạng thái</td>
+                <td>Thông báo cho người yêu cầu</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-3.2.2</span></td>
+                <td>Xem danh sách yêu cầu</td>
+                <td>Mã user, bộ lọc trạng thái, thời gian</td>
+                <td>Truy vấn theo quyền</td>
+                <td>Danh sách yêu cầu</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-3.2.3</span></td>
+                <td>Theo dõi trạng thái</td>
+                <td>Mã yêu cầu</td>
+                <td>Lấy lịch sử trạng thái</td>
+                <td>Trạng thái hiện tại + lịch sử</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 4 -->
+      <div class="mod-content" id="tab-4">
+        <div class="mod-header">
+          <h3>4. Quản lý tình nguyện viên</h3>
+          <p>Đăng ký, duyệt, hỗ trợ yêu cầu và bàn giao sách</p>
+        </div>
+        <div class="mod-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Chức năng con</th>
+                <th>Input</th>
+                <th>Process</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="code">M-4.1.1</span></td>
+                <td>Đăng ký làm TNV</td>
+                <td>Mã SV, liên hệ, thời gian & khu vực hỗ trợ</td>
+                <td>Ghi nhận đơn, chuyển Admin duyệt</td>
+                <td>Trạng thái chờ duyệt</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-4.1.2</span></td>
+                <td>Duyệt / từ chối TNV</td>
+                <td>Mã đơn, quyết định, ghi chú</td>
+                <td>Admin kiểm tra, cập nhật & phân quyền</td>
+                <td>Hồ sơ được duyệt / từ chối</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-4.1.3</span></td>
+                <td>Cập nhật hồ sơ & lịch hỗ trợ</td>
+                <td>Thông tin, khung giờ, khu vực</td>
+                <td>Kiểm tra quyền, cập nhật</td>
+                <td>Hồ sơ / lịch mới</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-4.2.1</span></td>
+                <td>Xem yêu cầu được phân công</td>
+                <td>Mã TNV, trạng thái, thời gian</td>
+                <td>Truy vấn yêu cầu được giao</td>
+                <td>Danh sách cần hỗ trợ</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-4.2.2</span></td>
+                <td>Nhận / phân công hỗ trợ</td>
+                <td>Mã yêu cầu, mã TNV, lịch</td>
+                <td>Kiểm tra TNV hoạt động & tải</td>
+                <td>Thông tin phân công</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-4.2.3</span></td>
+                <td>Cập nhật tiến độ hỗ trợ</td>
+                <td>Mã yêu cầu, trạng thái mới, ghi chú</td>
+                <td>Kiểm tra hợp lệ, lưu thời gian</td>
+                <td>Tiến độ mới</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-4.3.1</span></td>
+                <td>Thống nhất thời gian / địa điểm</td>
+                <td>Mã yêu cầu, lịch đề xuất</td>
+                <td>Ghi nhận & gửi thông báo</td>
+                <td>Lịch bàn giao</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-4.3.2</span></td>
+                <td>Xác nhận bàn giao</td>
+                <td>Mã yêu cầu, xác nhận 2 bên, ghi chú</td>
+                <td>Ghi nhận thời điểm, cập nhật số lượng sách</td>
+                <td>Biên nhận – đã bàn giao</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-4.3.3</span></td>
+                <td>Ghi nhận sự cố bàn giao</td>
+                <td>Mã yêu cầu, loại sự cố, mô tả, ảnh</td>
+                <td>Lưu sự cố, thông báo Admin</td>
+                <td>Mã báo cáo sự cố</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 5 -->
+      <div class="mod-content" id="tab-5">
+        <div class="mod-header">
+          <h3>5. Chia sẻ lại sách</h3>
+          <p>Quản lý sách đã nhận và đăng chia sẻ tiếp</p>
+        </div>
+        <div class="mod-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Chức năng con</th>
+                <th>Input</th>
+                <th>Process</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="code">M-5.1.1</span></td>
+                <td>Xem sách đã nhận</td>
+                <td>Mã user, bộ lọc trạng thái</td>
+                <td>Truy vấn sách đã nhận</td>
+                <td>Danh sách sách đã nhận</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-5.1.2</span></td>
+                <td>Đăng chia sẻ lại sách</td>
+                <td>Mã sách đã nhận, mô tả mới, tình trạng, ảnh</td>
+                <td>Kiểm tra lịch sử nhận, tạo bài mới liên kết</td>
+                <td>Bài đăng chia sẻ lại</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-5.1.3</span></td>
+                <td>Theo dõi lịch sử chia sẻ</td>
+                <td>Mã sách hoặc mã user</td>
+                <td>Truy vấn chuỗi đăng – nhận – chia sẻ lại</td>
+                <td>Lịch sử luân chuyển sách</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 6 -->
+      <div class="mod-content" id="tab-6">
+        <div class="mod-header">
+          <h3>6. Quản trị hệ thống</h3>
+          <p>Quản lý tài khoản, kiểm duyệt, báo cáo, vai trò và giao diện quản trị</p>
+        </div>
+        <div class="mod-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Chức năng con</th>
+                <th>Input</th>
+                <th>Process</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="code">M-6.1.1</span></td>
+                <td>Tra cứu danh sách tài khoản</td>
+                <td>Từ khóa, vai trò, trạng thái</td>
+                <td>Lọc theo thông tin & vai trò</td>
+                <td>Danh sách tài khoản</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-6.1.2</span></td>
+                <td>Khóa / mở khóa tài khoản</td>
+                <td>Mã user, lý do, trạng thái mới</td>
+                <td>Cập nhật trạng thái + nhật ký</td>
+                <td>Tài khoản bị khóa/mở</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-6.2.1</span></td>
+                <td>Duyệt / từ chối bài đăng</td>
+                <td>Mã bài, quyết định, ghi chú</td>
+                <td>Kiểm tra nội dung & ảnh</td>
+                <td>Bài được duyệt / từ chối</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-6.2.2</span></td>
+                <td>Ẩn bài đăng vi phạm</td>
+                <td>Mã bài, lý do</td>
+                <td>Lưu lý do & thời điểm</td>
+                <td>Bài bị ẩn + thông báo</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-6.3.1</span></td>
+                <td>Gửi báo cáo vi phạm</td>
+                <td>Đối tượng, loại vi phạm, mô tả, minh chứng</td>
+                <td>Tạo phiếu báo cáo</td>
+                <td>Mã báo cáo – chờ xử lý</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-6.3.2</span></td>
+                <td>Tiếp nhận & xử lý báo cáo</td>
+                <td>Mã báo cáo, kết quả, biện pháp</td>
+                <td>Xác minh, ghi nhận, thông báo</td>
+                <td>Báo cáo đã xử lý</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-6.4.1</span></td>
+                <td>Xem vai trò & quyền</td>
+                <td>Từ khóa, vai trò</td>
+                <td>Truy vấn vai trò & quyền</td>
+                <td>Bảng vai trò – quyền</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-6.4.2</span></td>
+                <td>Cấp / thu hồi quyền</td>
+                <td>Vai trò/tài khoản, danh sách quyền</td>
+                <td>Xác nhận, lưu cấu hình + nhật ký</td>
+                <td>Quyền được cập nhật</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-6.5.1–3</span></td>
+                <td>Giao diện quản trị</td>
+                <td>Tài khoản, vai trò</td>
+                <td>Kiểm tra quyền, tạo menu & dashboard</td>
+                <td>Trang quản trị + thống kê tổng quan</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 7 -->
+      <div class="mod-content" id="tab-7">
+        <div class="mod-header">
+          <h3>7. Thông báo</h3>
+          <p>Thông báo hệ thống về yêu cầu, lịch bàn giao</p>
+        </div>
+        <div class="mod-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Chức năng con</th>
+                <th>Input</th>
+                <th>Process</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="code">M-7.1.1</span></td>
+                <td>Thông báo yêu cầu nhận sách</td>
+                <td>Sự kiện tạo/xác nhận/từ chối/hủy</td>
+                <td>Xác định người nhận, tạo thông báo</td>
+                <td>Thông báo trong hệ thống</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-7.1.2</span></td>
+                <td>Thông báo lịch bàn giao</td>
+                <td>Lịch mới hoặc thay đổi</td>
+                <td>Gửi cho người chia sẻ, nhận & TNV</td>
+                <td>Thông tin lịch bàn giao</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-7.1.3</span></td>
+                <td>Xem thông báo</td>
+                <td>Mã user, trạng thái đọc</td>
+                <td>Truy vấn + cập nhật đã đọc</td>
+                <td>Danh sách thông báo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 8 -->
+      <div class="mod-content" id="tab-8">
+        <div class="mod-header">
+          <h3>8. Thống kê và báo cáo</h3>
+          <p>Thống kê hoạt động chia sẻ và tình nguyện</p>
+        </div>
+        <div class="mod-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Chức năng con</th>
+                <th>Input</th>
+                <th>Process</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="code">M-8.1.1</span></td>
+                <td>Thống kê hoạt động chia sẻ sách</td>
+                <td>Khoảng thời gian, danh mục, trạng thái</td>
+                <td>Tổng hợp số bài đăng, sách đã trao, yêu cầu…</td>
+                <td>Bảng thống kê & biểu đồ</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-8.1.2</span></td>
+                <td>Thống kê hoạt động tình nguyện</td>
+                <td>Thời gian, mã TNV, trạng thái</td>
+                <td>Tổng hợp lượt hỗ trợ, bàn giao, sự cố</td>
+                <td>Báo cáo TNV</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-8.1.3</span></td>
+                <td>Xuất báo cáo thống kê</td>
+                <td>Loại báo cáo, thời gian, định dạng</td>
+                <td>Tổng hợp + kiểm tra quyền + xuất file</td>
+                <td>Báo cáo / tệp xuất</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 9 -->
+      <div class="mod-content" id="tab-9">
+        <div class="mod-header">
+          <h3>9. Nhật ký và bảo mật</h3>
+          <p>Ghi nhận thao tác, kiểm soát truy cập và bảo vệ dữ liệu</p>
+        </div>
+        <div class="mod-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Chức năng con</th>
+                <th>Input</th>
+                <th>Process</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="code">M-9.1.1</span></td>
+                <td>Ghi nhận thao tác quan trọng</td>
+                <td>Người thao tác, hành động, đối tượng, thời gian</td>
+                <td>Tự động ghi nhật ký (đăng nhập, duyệt, khóa…)</td>
+                <td>Bản ghi nhật ký</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-9.1.2</span></td>
+                <td>Tra cứu nhật ký hệ thống</td>
+                <td>Từ khóa, người, loại, thời gian</td>
+                <td>Kiểm tra quyền Admin, truy vấn & lọc</td>
+                <td>Danh sách nhật ký</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-9.2.1</span></td>
+                <td>Kiểm tra quyền truy cập</td>
+                <td>Tài khoản, vai trò, chức năng</td>
+                <td>Đối chiếu quyền trước khi cho phép</td>
+                <td>Cho phép / từ chối</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-9.2.2</span></td>
+                <td>Quản lý phiên đăng nhập</td>
+                <td>Thông tin phiên, thời gian</td>
+                <td>Tạo, xác thực, hết hạn, hủy phiên</td>
+                <td>Phiên hợp lệ hoặc kết thúc</td>
+              </tr>
+              <tr>
+                <td><span class="code">M-9.2.3</span></td>
+                <td>Bảo vệ dữ liệu tài khoản</td>
+                <td>Mật khẩu, dữ liệu cá nhân</td>
+                <td>Mã hóa, giới hạn truy cập, ghi nhận thao tác nhạy cảm</td>
+                <td>Dữ liệu được bảo vệ</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PERMISSION -->
+  <section id="permission" style="background: white;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">06 · Phân quyền</div>
+        <h2 class="section-title">Ma trận phân quyền theo vai trò</h2>
+      </div>
+
+      <div class="perm-table-wrap">
+        <table class="perm-table">
+          <thead>
+            <tr>
+              <th>Chức năng</th>
+              <th>Sinh viên</th>
+              <th>Tình nguyện viên</th>
+              <th>Quản trị viên</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Đăng ký / Đăng nhập / Hồ sơ</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Xem / Tìm kiếm sách</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Đăng / Sửa / Gỡ bài của mình</td>
+              <td class="yes">✓</td>
+              <td class="partial">Chỉ khi là chủ</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Gửi yêu cầu nhận sách</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Xác nhận yêu cầu (sách của mình)</td>
+              <td class="yes">✓</td>
+              <td class="partial">Chỉ khi là chủ</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Xem yêu cầu được phân công</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Cập nhật tiến độ / Bàn giao</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Đăng ký làm TNV</td>
+              <td class="yes">✓</td>
+              <td class="partial">Đã duyệt</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Duyệt / Từ chối TNV</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Quản lý danh mục sách</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Kiểm duyệt bài đăng</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Gửi báo cáo vi phạm</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Xử lý báo cáo vi phạm</td>
+              <td class="no">—</td>
+              <td class="partial">Chỉ chuyển</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Khóa / Mở khóa tài khoản</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Xem thống kê toàn hệ thống</td>
+              <td class="no">—</td>
+              <td class="partial">Theo quyền</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Quản lý vai trò & quyền</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Truy cập giao diện quản trị</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Xem nhật ký hệ thống</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATUS -->
+  <section id="status">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">07 · Trạng thái gợi ý</div>
+        <h2 class="section-title">Trạng thái bài đăng & yêu cầu</h2>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-card">
+          <h3>📖 Trạng thái bài đăng sách</h3>
+          <div class="status-tags">
+            <span class="stag wait">Chờ duyệt</span>
+            <span class="stag active">Đang chia sẻ</span>
+            <span class="stag hide">Tạm ẩn</span>
+            <span class="stag">Đã hết sách</span>
+            <span class="stag done">Đã trao</span>
+            <span class="stag reject">Bị từ chối</span>
+          </div>
+        </div>
+        <div class="status-card">
+          <h3>📩 Trạng thái yêu cầu nhận sách</h3>
+          <div class="status-tags">
+            <span class="stag wait">Chờ xác nhận</span>
+            <span class="stag active">Đã xác nhận</span>
+            <span class="stag progress">Đang sắp xếp bàn giao</span>
+            <span class="stag done">Đã bàn giao</span>
+            <span class="stag reject">Bị từ chối</span>
+            <span class="stag hide">Đã hủy</span>
+            <span class="stag reject">Có sự cố</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">T.R.E.E <span>– Góc Sách Toán–Tin</span></div>
+      <p>Transfer · Retain · Evolve · Education</p>
+      <div class="footer-team">
+        <strong>Nhóm thực hiện:</strong><br />
+        Tô Nhật Minh (Leader) · Nguyễn Văn Ngọc Hảo · Nguyễn Trung Hiếu<br />
+        Nguyễn Tiến Hùng · Phạm Đỗ Thi Khánh
+      </div>
+      <div class="footer-copy">
+        © 2025 · Đề tài Hệ thống Quản lý Góc sách Khoa Toán–Tin<br />
+        Cảm ơn thầy cô và các bạn đã lắng nghe trình bày đề tài của nhóm
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // Mobile menu
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => navLinks.classList.remove('open'));
+    });
+
+    // Module tabs
+    const tabs = document.querySelectorAll('.mod-tab');
+    const contents = document.querySelectorAll('.mod-content');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
